@@ -9,10 +9,27 @@ const usersFunc = require('./utils/users');
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+const DB = require('./modules/db.js');
+const res = require('express/lib/response');
+const { password } = require('pg/lib/defaults');
+const { json } = require('express/lib/response');
 
 const botName = 'HOST';
 
 const server = http.createServer(app);
+
+// app.get('/modules/db.js',(req,res) => {
+//     DB.getUsers()
+//     .then(data => {
+//         console.log(data);
+//         // res.render('/')
+//         // client ()
+//         // {
+//         //     users : data
+//         // })
+//     })
+//     .catch(e => res.json({message:e.message}));
+// });
 
 
 app.set('view engine', 'ejs');
@@ -86,3 +103,27 @@ server.listen(`${process.env.PORT || 4444}`,()=>{
     console.log(`Server listening on port ${process.env.PORT}`);
     
 })
+
+
+DB.getUsers()
+.then(data => {
+    console.log(data);
+})
+.catch(e => res.json({message:e.message}));
+DB.getPassword()
+.then(data => {
+    console.log(data);
+})
+.catch(e => res.json({message:e.message}));
+
+
+const username = 'tom_hein';
+const password1 = '654321';
+
+DB.validateUser(username, password1)
+.then(data => {
+    if(data.username === username && data.password === password1){
+        return true;
+    }
+})
+.catch(e => res.json({message:e.message}));
