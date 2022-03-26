@@ -1,43 +1,88 @@
-// const dotenv = require('dotenv');
-// dotenv.config();
 const express = require('express');
 const app = express();
+const http = require('http');
+const dotenv = require('dotenv');
+dotenv.config();
+const socketio = require('socket.io');
+const formatMessage = require('./utils/messages');
+const usersFunc = require('./utils/users');
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-app.listen(2020,()=>{
-    console.log('Listening on port 2020');
+const botName = 'HOST';
+
+const server = http.createServer(app);
+
+
+app.set('view engine', 'ejs');
+
+app.get('/', (req,res) =>{
+
+    res.render('pages/index');
 })
 
-app.use(express.static('public'));
+app.use('/',express.static('public'));
 
-app.get('/', (req, res) => {
-    res.send('/')
-});
+const io = socketio(server);
 
-const io = require('socket.io')('2000');
-
-const users = {}
-
-// Each time a user loads up the website we call this function
-// Each one gets his own socket
+//** When a User Connects **/
 io.on('connection', socket => {
+    //** handle user Join from client side */
+    socket.on('joinRoom', ({username, room}) => { 
+        const user = usersFunc.userJoin(socket.id, username, room);
 
-  // 1.1 'new-user' EVENT - When getting an event that new user signed up
-  socket.on('new-user', name => {
-    users[socket.id] = name
-    // 2. 'user-connected' EVENT - Sending a message to all conected users about who connected
-    socket.broadcast.emit('user-connected', name)
-  })
+        socket.join(user.room);
 
-  // 4.1 'send-chat-message' EVENT - When one user want to send message to others
-  socket.on('send-chat-message', message => {
-    // 5. 'chat-message' EVENT - Sending the message from one user to every connected user to server
-    // Except to the user who sends the message
-    socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
-  })
+        //** Welcome User */
+        socket.emit('message', formatMessage.formatMessage(botName, 'Welcome To the Chat Room!')) // .emit BROADCASTS to a single connected client on client side
+        //** When Someone Joins */
+        socket.broadcast.to(user.room).emit('message',formatMessage.formatMessage(botName, `${user.username} just joined the chat`)); // .broadcast.emit BROADCASTS to all clients on clients side ECXEPT for the user that just connected
+        
+        //** Users & room info to sidebar */
+        io.to(user.room).emit('roomUsers', {
+            room: user.room,
+            users: usersFunc.roomUsers(user.room)
+        });
+    });
+    
+    //** Catch messages from client side */
+    socket.on('chatMessage', (msg)=> {
+        const user = usersFunc.getCurrentUser(socket.id);
+        //** Send the message back to chat room */
+        io.to(user.room).emit('message',formatMessage.formatMessage(user.username, msg));
+    });
+    //** When Someone Leaves */
+    socket.on('disconnect', () => {
+        const user = usersFunc.userLeft(socket.id);
+        if(user){
+            io.to(user.room).emit('message', formatMessage.formatMessage(botName, `${user.username} just left the chat`)) // will BROADCAST to ALL connected clients on client side
+             //** Users & room info to sidebar */
+            io.to(user.room).emit('roomUsers', {
+                room: user.room,
+                users: usersFunc.roomUsers(user.room)
+             });
+        }
+        
+    });
+}); 
 
-  // 6.1 'user-disconnected' Event 
-  socket.on('disconnect', () => {
-    socket.broadcast.emit('user-disconnected', users[socket.id])
-    delete users[socket.id]
-  })
+
+
+
+app.post('/chat', (req, res) => {
+
+    res.render('pages/chat', 
+        
+        {
+            dataFromForm : req.body
+        }   
+    )
+})
+
+
+
+server.listen(`${process.env.PORT || 4444}`,()=>{
+    console.log(`Server listening on port ${process.env.PORT}`);
+    
 })
