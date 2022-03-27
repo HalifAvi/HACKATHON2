@@ -1,6 +1,5 @@
 const knex = require('knex');
 const dotenv = require('dotenv');
-const { password } = require('pg/lib/defaults');
 
 dotenv.config();
 
