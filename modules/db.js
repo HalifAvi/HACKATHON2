@@ -18,31 +18,60 @@ const db = knex({
 
 /*
 *
-*This function get the all users + id
+* This function get the user's details from db (returns a Promise)
 */
-const getUsers = () => {
-    return  db('users')
-    .select('user_id', 'user_name', 'user_lastname', 'username');
+const getUser = (obj) => {
+
+    let condition;
+
+    // Check if we just want to know if we already have the same username in db
+    // Or we want to know thw username + password are correct to login 
+    obj.hasOwnProperty('password') ? condition = {username : obj.username, password : obj.password} :
+                                     condition = {username : obj.username}       
+
+    return db('Hackaton2')
+    .select('*')
+    .from('users')
+    .where(condition)
 } 
+
 
 /*
 *
-*This function get the all users id & passwords
+* This function insert new user to the db
 */
-const getPassword = () => {
-    return  db('users')
-    .select('user_id', 'password')
-} 
+const insertNewUserToDB = (obj) => {
+
+    db('Hackaton2')
+   .insert([{user_name : obj.firstName, user_last_name : obj.lastName, age : obj.age, e_mail : obj.email, password : obj.password, username : obj.username}])
+   .from('users')
+   .catch(e => console.log(e))
+}
 
 
-const validateUser = (username, password) => {    
-    return  db('users')
-    .select('username', 'password')
-    .where({username : username},{password: password})
-} 
+/*
+*
+* This function insert new user status to the db
+*/
+// const insertUserStatusToDB = (status, userID) => {
+
+//     status = "online"; // For new user
+
+//     db('Hackaton2')
+//    .insert([{status_name : status, }])
+//    .from('usersStatus')
+//    .catch(e => console.log(e))
+// }
+
 
 module.exports = {
-    getUsers,
-    getPassword,
-    validateUser
+
+    getUser, 
+    insertNewUserToDB,
+    // insertUserStatusToDB
 }
+
+
+
+
+

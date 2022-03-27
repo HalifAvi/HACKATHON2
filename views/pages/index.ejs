@@ -9,16 +9,14 @@
 		<title>CHAT ME :)</title>
 	</head>
 	<body>
-		<div class="join-container">
+		<div class="join-container" id= <%= JSON.stringify(accountCreated) %>>
 			<header class="join-header">
 				<h1><i class="fas fa-comment-dots"></i> ChatMe</h1>
 			</header>
 			<main class="join-main">
 				<form action="/chat" method="POST">
 					<div class="form-control">
-						<!-- <label for="username">Username</label> -->
-						<input type="text" name="username" id="username" placeholder="Enter username" required/>
-						<!-- <label for="password">Password</label> -->
+						<input type="text" pattern="[a-zA-Z]*" name="username" id="username" placeholder="Enter username" required/>
 						<input type="password" name="password" id="password" placeholder="Enter password" required/>
 					</div>
 					<div class="form-control">
@@ -36,5 +34,6 @@
 				</form>
 			</main>
 		</div>
+		<script src="js/index.js"></script>
 	</body>
 </html>

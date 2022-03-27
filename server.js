@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const dotenv = require('dotenv');
+const DB = require('./modules/db.js');
 dotenv.config();
 const socketio = require('socket.io');
 const formatMessage = require('./utils/messages');
@@ -36,7 +37,10 @@ app.set('view engine', 'ejs');
 
 app.get('/', (req,res) =>{
 
-    res.render('pages/index');
+    res.render('pages/index',
+    {
+        accountCreated : false
+    })
 })
 
 app.use('/',express.static('public'));
@@ -84,18 +88,91 @@ io.on('connection', socket => {
     });
 }); 
 
+let goToChat = (req, res) => {
 
+    res.render('pages/chat', 
+            
+        {
+            dataFromForm : req.body
+        }
+    )   
+}
+
+
+let goToRegister = (boolVar, res) => {
+
+    res.render('pages/register', 
+    
+        data = {  
+
+        isUserAlreadyExist : boolVar
+        }
+    )
+}
+
+
+let checkLogIn = (req, res) => {
+
+    DB.getUser({username : req.body.username, password : req.body.password}) // Return a Promise
+    .then(answer => { 
+
+        console.log(answer.length)
+
+        if(answer.length !== 0){ // If user exists
+
+            goToChat(req, res);
+            
+        }else{ // Go to register page to registration
+
+            goToRegister(false, res);
+    
+           }
+    })
+    .catch(err => console.log(err))
+}
 
 
 app.post('/chat', (req, res) => {
 
-    res.render('pages/chat', 
-        
-        {
-            dataFromForm : req.body
-        }   
-    )
+    checkLogIn(req, res); // If the user exists into db - go to chat!
 })
+
+
+let checkRegistrationDetailsToStore = (req, res) => {
+
+    DB.getUser({username : req.body.username}) // Return a Promise
+    .then(answer => {  // The answer is an array of objects
+
+        console.log(answer.length)
+
+        if(answer.length !== 0){ // If user exists
+
+            goToRegister(true, res);
+            
+        }else{ // Insert the new user details to db and go to login page
+
+            DB.insertNewUserToDB(req.body)
+                // .then(answer => {
+                // console.log(answer);
+
+
+                res.render('pages/index',
+                {
+                    accountCreated : true
+                })
+            // })
+            // .catch(e => console.log(e))
+        }
+    })
+    .catch(err => console.log(err));
+}
+
+
+
+app.post('/index', (req, res) => {
+
+    checkRegistrationDetailsToStore(req, res); // If the user exists into db - details already exist
+}) 
 
 
 
