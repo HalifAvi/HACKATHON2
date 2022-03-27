@@ -136,7 +136,8 @@ let checkRegistrationDetailsToStore = (req, res) => {
 
             DB.insertNewUserToDB(req.body)
                 // .then(answer => {
-                // console.log(answer);
+                // console.log(answer)
+            
 
 
                 res.render('pages/index',

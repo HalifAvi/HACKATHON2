@@ -14,7 +14,6 @@ const db = knex({
     }
 });
 
-
 /*
 *
 * This function get the user's details from db (returns a Promise)
@@ -67,7 +66,7 @@ module.exports = {
 
     getUser, 
     insertNewUserToDB,
-    /// insertUserStatusToDB
+    // insertUserStatusToDB
 }
 
 
