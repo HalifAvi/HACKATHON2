@@ -56,7 +56,7 @@ const insertNewUserToDB = (obj) => {
 */
 // const insertUserStatusToDB = (status, userID) => {
 
-//     status = "online"; // For new user
+//     status = "offline"; // For new user
 
 //     db('Hackaton2')
 //    .insert([{status_name : status, }])
@@ -69,7 +69,7 @@ module.exports = {
 
     getUser, 
     insertNewUserToDB,
-    /// insertUserStatusToDB
+    // insertUserStatusToDB
 }
 
 
