@@ -68,7 +68,7 @@ module.exports = {
 
     getUser, 
     insertNewUserToDB,
-    // insertUserStatusToDB
+    /// insertUserStatusToDB
 }
 
 

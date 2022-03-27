@@ -160,7 +160,7 @@ let checkRegistrationDetailsToStore = (req, res) => {
                 {
                     accountCreated : true
                 })
-            // })
+            /// })
             // .catch(e => console.log(e))
         }
     })
