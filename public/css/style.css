@@ -86,18 +86,7 @@ a {
 .chat-sidebar ul li {
 	padding: 10px 0;
 }
-.card-body {
-	display: flex;
-	margin-bottom: 0.5em;
-}
 
-#user_pic {
-	height: 3.5rem;
-	width: 3.5rem;
-	padding-top: .25rem;
-	padding-right: 0.5rem;
-	border-radius: 50%;
-}
 .chat-messages {
 	padding: 30px;
 	max-height: 500px;
@@ -213,4 +202,3 @@ a {
 		display: none;
 	}
 }
-

@@ -21,8 +21,9 @@ app.set('view engine', 'ejs');
 app.get('/', (req,res) =>{
 
     res.render('pages/index',
-    {
-        accountCreated : false
+    data = {
+        accountCreated : false,
+        alreadyExist : false
     })
 })
 
@@ -62,12 +63,11 @@ io.on('connection', socket => {
         if(user){
             io.to(user.room).emit('message', formatMessage.formatMessage(botName, `${user.username} just left the chat`)) // will BROADCAST to ALL connected clients on client side
              //** Users & room info to sidebar */
-            io.to(user.room).emit('roomUsers', {
+            io.to(user.room).emit('roomUsers', { 
                 room: user.room,
                 users: usersFunc.roomUsers(user.room)
              });
         }
-        
     });
 }); 
 
@@ -97,15 +97,41 @@ let goToRegister = (boolVar, res) => {
 let checkLogIn = (req, res) => {
 
     DB.getUser({username : req.body.username, password : req.body.password}) // Return a Promise
-    .then(answer => { 
+    .then(arr => { 
+  
+        if(arr.length !== 0){ // If user exists
 
-        console.log(answer.length)
+            console.log(arr.length);
+            console.log(arr[0]['user_id']); 
 
-        if(answer.length !== 0){ // If user exists
+            DB.getUserStatus( arr[0]['user_id'] ) // Check user's status
+            .then(ans => {
 
-            goToChat(req, res);
+                console.log(ans[0]['status_name']);
+
+                if(ans[0]['status_name'] === 'offline'){ // If user is exists in DB and offline
+
+                    let status = 'online';
+
+                    console.log(arr[0]['user_id'])
+
+                    DB.updateUserStatusInDB( status, arr[0]['user_id'] ) // Update user's status
+                    .catch(err => console.log(err));
             
-        }else{ // Go to register page to registration
+                    goToChat(req, res);
+
+                }else{ // If user is already 'online'
+
+                    res.render('pages/index',
+                    data = {
+                        accountCreated : false,
+                        alreadyExist : true
+                    })
+                }
+            })
+            .catch(err => console.log(err));
+
+        }else{ // If the user is not exists - Go to register page to registration
 
             goToRegister(false, res);
     
@@ -113,6 +139,27 @@ let checkLogIn = (req, res) => {
     })
     .catch(err => console.log(err))
 }
+
+
+app.get('/index', (req, res) => { // When the user leaves the chat 
+
+    console.log((JSON.parse((req.query)['username']))['username'])
+    // Get user's ID from DB
+    DB.getUser({username : (JSON.parse((req.query)['username']))['username']}) // Return a Promise
+    .then(arr => { 
+
+        // Update user's status to 'offline' in DB 
+        DB.updateUserStatusInDB( "offline", arr[0]['user_id'] ) // Update user's status
+        .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
+
+    res.render('pages/index',
+                data = {
+                        accountCreated : false,
+                        alreadyExist : false
+                    })
+})
 
 
 app.post('/chat', (req, res) => {
@@ -134,23 +181,27 @@ let checkRegistrationDetailsToStore = (req, res) => {
             
         }else{ // Insert the new user details to db and go to login page
 
-            DB.insertNewUserToDB(req.body)
-                // .then(answer => {
-                // console.log(answer)
-            
+            DB.insertNewUserToDB(req.body) 
+            .then(arr =>{
 
+                let status = "offline"; // For new user
 
+                console.log(arr[0]['user_id'])
+                
+                DB.insertUserStatusToDB( status, arr[0]['user_id'] ) // Update user's status
+                .catch(err => console.log(err));
+          
                 res.render('pages/index',
-                {
-                    accountCreated : true
-                })
-            // })
-            // .catch(e => console.log(e))
+                data = {
+                        accountCreated : true,
+                        alreadyExist : false
+                    })
+            })
+            .catch(err => console.log(err));
         }
     })
     .catch(err => console.log(err));
 }
-
 
 
 app.post('/index', (req, res) => {
