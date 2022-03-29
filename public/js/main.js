@@ -1,3 +1,32 @@
+let setBackgroundImg = () => {
+
+    let chatBackgroundElement = document.querySelector('main.chat-main');
+
+    console.log(chatBackgroundElement)
+
+switch(room){ 
+
+    case 'LifeStyle' : chatBackgroundElement.style.backgroundImage = "url('img/LifeStyle.jpg')";
+        break;  
+
+    case 'Sport' : chatBackgroundElement.style.backgroundImage = "url('img/Sport.jpg')";
+        break;
+
+    case 'Technology' : chatBackgroundElement.style.backgroundImage = "url('img/Technology.jpg')";
+        break;
+
+    case 'RealEstate' : chatBackgroundElement.style.backgroundImage = "url('img/RealEstate.jpg')";
+        break;
+
+    case 'Games' : chatBackgroundElement.style.backgroundImage = "url('img/Games.jpg')";
+        break;
+
+    case 'Cooking' : chatBackgroundElement.style.backgroundImage = "url('img/Cooking.jpg')";
+        break;
+    }
+}
+
+
 const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
@@ -7,8 +36,12 @@ const userList = document.getElementById('users');
 //** Get Username and Room from URL */ 
 
 let jsonDataFromForm = document.querySelector('div.chat-messages').id;
-let objDataFromForm = JSON.parse(jsonDataFromForm)
-const {username, room} = objDataFromForm;
+let objDataFromForm = (JSON.parse(jsonDataFromForm)).dataFromForm;
+
+console.log(jsonDataFromForm)
+const {username, room} = objDataFromForm;    
+
+setBackgroundImg();
 
 const socket = io(); // corresponds to io.on on server.js
 
@@ -61,11 +94,3 @@ const outputUsers = (users) => {
     userList.innerHTML = `${users.map(user => `<li>${user.username}</li>`).join('')}`;
 };
 
-const roomBackground = (room) => {
-    if(room) {
-        chatMessages.style.backgroundImage = "url('https://media.istockphoto.com/vectors/customer-support-related-seamless-pattern-and-background-with-line-vector-id1201667381')"
-    } else {
-        console.log('nope');
-    }
-}
-   

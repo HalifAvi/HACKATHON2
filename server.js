@@ -13,8 +13,9 @@ app.use(bodyParser.json());
 
 const botName = 'HOST';
 
-const server = http.createServer(app);
+let photoPath;
 
+const server = http.createServer(app);
 
 app.set('view engine', 'ejs');
 
@@ -71,12 +72,13 @@ io.on('connection', socket => {
     });
 }); 
 
-let goToChat = (req, res) => {
+let goToChat = (req, res, userDetailsObj) => {
 
     res.render('pages/chat', 
             
-        {
-            dataFromForm : req.body
+        data = {
+            dataFromForm : req.body,
+            userData : userDetailsObj
         }
     )   
 }
@@ -95,6 +97,8 @@ let goToRegister = (boolVar, res) => {
 
 
 let checkLogIn = (req, res) => {
+
+    photoPath = `uploads/unknown.png`;
 
     DB.getUser({username : req.body.username, password : req.body.password}) // Return a Promise
     .then(arr => { 
@@ -117,8 +121,8 @@ let checkLogIn = (req, res) => {
 
                     DB.updateUserStatusInDB( status, arr[0]['user_id'] ) // Update user's status
                     .catch(err => console.log(err));
-            
-                    goToChat(req, res);
+
+                    goToChat(req, res, arr[0]); // 'arr[0]' holds obj with all user's data 
 
                 }else{ // If user is already 'online'
 
@@ -158,7 +162,7 @@ app.get('/index', (req, res) => { // When the user leaves the chat
                 data = {
                         accountCreated : false,
                         alreadyExist : false
-                    })
+    })
 })
 
 
@@ -182,7 +186,7 @@ let checkRegistrationDetailsToStore = (req, res) => {
             
         }else{ // Insert the new user details to db and go to login page
 
-            DB.insertNewUserToDB(req.body) 
+            DB.insertNewUserToDB(req.body, photoPath) 
             .then(arr =>{
 
                 let status = "offline"; // For new user
@@ -209,6 +213,45 @@ app.post('/index', (req, res) => {
 
     checkRegistrationDetailsToStore(req, res); // If the user exists into db - details already exist
 }) 
+
+const fs = require('fs');
+const multer = require('multer');
+
+let storage = multer.diskStorage({
+
+    destination : function (req, file, callback) {
+
+        let dir = "./public/uploads";
+
+        if(!fs.existsSync(dir)){
+
+            fs.mkdirSync(dir);
+        }
+        callback(null, dir);
+    },
+
+    filename : function(req, file, callback) {
+
+        callback(null, file.originalname);
+
+        photoPath = `uploads/${file.originalname}`;
+    }
+});
+
+// Uploade just one file each time
+let upload = multer({storage:storage}).array("files", 1);
+
+
+app.post('/upload', (req, res) => {
+
+    upload(req, res, function(err) {
+
+        if(err){
+
+            console.log("error to upload!")
+        }
+    })
+})
 
 
 

@@ -1,4 +1,3 @@
-/* @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap'); */
 
 :root {
 	--dark-color-a: #667aff;
@@ -71,6 +70,9 @@ a {
 .chat-main {
 	display: grid;
 	grid-template-columns: 1fr 3fr;
+	background-position: center;
+	background-size: cover;
+	height: 500px;
 }
 
 .chat-sidebar {
