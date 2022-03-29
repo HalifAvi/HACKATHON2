@@ -41,10 +41,10 @@ const getUser = (obj) => {
 *
 * This function insert new user to the db
 */
-const insertNewUserToDB = (obj) => {
+const insertNewUserToDB = (obj, photoPath) => {
 
    return db('Hackaton2')
-   .insert([{user_name : obj.firstName, user_last_name : obj.lastName, age : obj.age, e_mail : obj.email, password : obj.password, username : obj.username}])
+   .insert([{user_name : obj.firstName, user_last_name : obj.lastName, age : obj.age, e_mail : obj.email, password : obj.password, username : obj.username, photo_path : photoPath}])
    .returning('user_id')
    .from('users')
 }
@@ -86,30 +86,6 @@ const updateUserStatusInDB = (status, userID) => {
    .from('usersstatus')
    .where({user_id : userID})
 }
-
-
-
-/*
-*
-* This function returns user's ID according to his name
-*/
-// const getUserID = (status, userName) => {
-
-//     return db('Hackaton2')
-//     .join('users', 'users.user_id', '=', 'usersstatus.user_id')
-//    .where({username : userName})
-//    .select('users.user_id')
-// }
-
-
-
-// knex('users')
-//   .join('contacts', 'users.id', '=', 'contacts.user_id')
-//   .select('users.id', 'contacts.phone')
-// Outputs:
-// select `users`.`id`, `contacts`.`phone` from `users` inner join `contacts` on `users`.`id` = `contacts`.`user_id`
-
-
 
 
 module.exports = {
