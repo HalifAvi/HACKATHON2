@@ -87,6 +87,14 @@ const updateUserStatusInDB = (status, userID) => {
    .where({user_id : userID})
 }
 
+// GET room bgImgae
+
+const getRoomBG = (room_name) => {
+    return db('Hackaton2')
+    .select('bg_pic_url')
+    .from('room_history')
+    .where('room_name' === room_name)
+}
 
 module.exports = {
 
@@ -94,7 +102,8 @@ module.exports = {
     insertNewUserToDB,
     insertUserStatusToDB,
     getUserStatus,
-    updateUserStatusInDB
+    updateUserStatusInDB,
+    getRoomBG
 }
 
 
