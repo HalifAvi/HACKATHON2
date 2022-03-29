@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="css/style.css">
+  <title>CHAT ME :)</title>
+</head>
+ <body>
+
+  <div class="chat-container">
+    <header class="chat-header">
+      <h1><i class="fas fa-comment-dots"></i> ChatMe</h1>
+      <h3><i class="fas fa-comments"></i> Room Name:</h3>
+      <h2 id="room-name"></h2>
+      <form  action="/index" method="GET">
+        <input style="display: none" name="username" value = <%= JSON.stringify(data.dataFromForm) %>>
+        <button type="submit" class="btn">Leave Room</button>
+      </form>
+    </header>
+    <main class="chat-main">
+      <div class="chat-sidebar">
+          <div class="user-card">
+            <div class="card-body">
+              <div>
+                <img id="user_pic" src= <%= data.userData['photo_path'] %> class="card-img-top" alt="pofile pic">
+              </div>
+              <div>
+                <h5 id="user_name" class="card-title"><%= data.userData['username'] %></h5>
+                <h6 id="user_fullname" class="card-info"><%= data.userData['user_name']%> - <%= data.userData['user_last_name']%></h6>
+                <h6 id="user_age" class="card-info">Age: <%= data.userData['age']%></h6>
+                <h6 id="user_email" class="card-info"><%= data.userData['e_mail']%></h6>
+              </div>
+            </div>
+          </div> 
+          <h3><i class="fas fa-users"></i> Users</h3>
+          <ul id="users">
+          </ul> 
+      </div>
+      <div class="chat-messages" id= <%= JSON.stringify(data) %>>
+				
+      </div>
+    </main>
+    <div class="chat-form-container">
+      <form id="chat-form">
+        <input
+          id="msg"
+          type="text"
+          placeholder="Enter Message"
+          required
+          autocomplete="off"
+        />
+        <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/main.js"></script>
+ </body>
+</html>
