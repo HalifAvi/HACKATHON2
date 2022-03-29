@@ -162,6 +162,7 @@ app.get('/index', (req, res) => { // When the user leaves the chat
 })
 
 
+
 app.post('/chat', (req, res) => {
 
     checkLogIn(req, res); // If the user exists into db - go to chat!

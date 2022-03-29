@@ -3,6 +3,7 @@ const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
 
+
 //** Get Username and Room from URL */ 
 
 let jsonDataFromForm = document.querySelector('div.chat-messages').id;
@@ -18,6 +19,7 @@ socket.emit('joinRoom', {username, room});
 socket.on('roomUsers', ({room, users})=> {
     outputRoomName(room);
     outputUsers(users);
+    roomBackground(room);
 })
 
 socket.on('message', message => { // catching message from socket.emit on server.js
@@ -58,3 +60,12 @@ const outputRoomName = (room) => {
 const outputUsers = (users) => {
     userList.innerHTML = `${users.map(user => `<li>${user.username}</li>`).join('')}`;
 };
+
+const roomBackground = (room) => {
+    if(room) {
+        chatMessages.style.backgroundImage = "url('https://media.istockphoto.com/vectors/customer-support-related-seamless-pattern-and-background-with-line-vector-id1201667381')"
+    } else {
+        console.log('nope');
+    }
+}
+   

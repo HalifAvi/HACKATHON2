@@ -11,7 +11,12 @@
 
   <div class="chat-container">
     <header class="chat-header">
-      <h1><i class="fas fa-comment-dots"></i> ChatMe</h1>
+      <h1><i class="fas fa-comments"></i> ChatMe</h1>
+      <div id="room-div">
+        <h3>Room Name:</h3>
+        <h2 id="room-name"></h2>
+      </div>
+      
       <form  action="/index" method="GET">
         <input style="display: none" name="username" value = <%= JSON.stringify(dataFromForm) %>>
         <button type="submit" class="btn">Leave Room</button>
@@ -19,10 +24,23 @@
     </header>
     <main class="chat-main">
       <div class="chat-sidebar">
-        <h3><i class="fas fa-comments"></i> Room Name:</h3>
-        <h2 id="room-name"></h2>
-        <h3><i class="fas fa-users"></i> Users</h3>
-        <ul id="users">
+        
+        
+          <div class="user-card">
+            <div class="card-body">
+              <div>
+                <img id="user_pic" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLtxSyIeak-Ab2othr8tZBvRNWkD15IEqNLg&usqp=CAU" class="card-img-top" alt="pofile pic">
+              </div>
+              <div>
+                <h5 id="user_name"  class="card-title">username here</h5>
+                <h6 id="user_fullname" class="card-info">Name: user_name & user_lastname here</h6>
+                <h6 id="user_age" class="card-info">age: age here</h6>
+                <h6 id="user_email" class="card-info">e-mail: email here</h6>
+              </div>
+            </div>
+          </div> 
+          <h3><i class="fas fa-users"></i> Users</h3>
+          <ul id="users">
         </ul>
       </div>
       <div class="chat-messages" id= <%= JSON.stringify(dataFromForm) %>>
